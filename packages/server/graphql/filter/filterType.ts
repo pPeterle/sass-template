@@ -1,3 +1,5 @@
+import type { PipelineStage } from "mongoose";
+
 export const FILTER_CONDITION_TYPE = {
   // something that could be used on find() or $match
   MATCH_1_TO_1: "MATCH_1_TO_1",
@@ -6,7 +8,7 @@ export const FILTER_CONDITION_TYPE = {
 } as const;
 export type BuildedConditionSet = {
   conditions: Record<string, unknown>;
-  pipeline: string[] | Record<string, unknown>[];
+  pipeline: PipelineStage[];
 };
 export type FilterFieldMappingMatch<TContext, TValue> = {
   type: typeof FILTER_CONDITION_TYPE.MATCH_1_TO_1;
