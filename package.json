@@ -1,0 +1,20 @@
+{
+	"name": "sass",
+	"type": "module",
+	"private": true,
+	"workspaces": [
+		"packages/*"
+	],
+	"scripts": {
+		"dev": "concurrently \"bun run --bun server:dev\" ",
+		"server:dev": "cd packages/server && bun run dev"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.1.2",
+		"@types/bun": "latest",
+		"concurrently": "^9.2.0"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	}
+}
