@@ -1,20 +1,22 @@
 import type { ConnectionArguments } from "graphql-relay";
+import type { PipelineStage } from "mongoose";
+import type { PipeArgs } from "./withConnectionAggregate";
 
 type ArgsWithFilter = {
-	filters?: Record<string, unknown>;
-	[key: string]: unknown;
+  filters: PipelineStage;
+  [key: string]: PipelineStage;
 } & ConnectionArguments;
 
 export const withFilter = ({
-	args,
-	filters,
+  args,
+  filters,
 }: {
-	args: ArgsWithFilter;
-	filters: Record<string, unknown>;
+  args: ArgsWithFilter;
+  filters?: PipeArgs;
 }) => ({
-	...args,
-	filters: {
-		...filters,
-		...(args?.filters || {}),
-	},
+  ...args,
+  filters: {
+    ...filters,
+    ...(args?.filters || {}),
+  },
 });

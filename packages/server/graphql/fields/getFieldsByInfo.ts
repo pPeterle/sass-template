@@ -1,14 +1,12 @@
 import type { GraphQLResolveInfo } from "graphql";
 import graphqlFields from "graphql-fields";
 
-export const isInputAnInfo = (maybeInfo: any): boolean => {
-	const typeofMaybeInfo = typeof maybeInfo;
-
-	if (typeofMaybeInfo !== "object") {
-		return false;
-	}
-
-	return !!maybeInfo?.fieldNodes || !!maybeInfo?.fieldASTs;
+export const isInputAnInfo = (maybeInfo: unknown): boolean => {
+	return (
+		maybeInfo !== null &&
+		typeof maybeInfo === "object" &&
+		("fieldNodes" in maybeInfo || "fieldASTs" in maybeInfo)
+	);
 };
 
 export const getFieldsByInfo = (info: GraphQLResolveInfo) => {

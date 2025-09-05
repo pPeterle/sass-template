@@ -1,4 +1,5 @@
-import type { PipelineStage } from "mongoose";
+import type { GraphQLContext } from "@graphql/context";
+import type { FilterQuery, PipelineStage } from "mongoose";
 
 export const FILTER_CONDITION_TYPE = {
   // something that could be used on find() or $match
@@ -6,42 +7,32 @@ export const FILTER_CONDITION_TYPE = {
   CUSTOM_CONDITION: "CUSTOM_CONDITION", // create a custom condition based on value
   AGGREGATE_PIPELINE: "AGGREGATE_PIPELINE",
 } as const;
+
+type FunctionArgs<TValue> = {
+  value: TValue;
+  context: GraphQLContext;
+};
+
 export type BuildedConditionSet = {
   conditions: Record<string, unknown>;
   pipeline: PipelineStage[];
 };
-export type FilterFieldMappingMatch<TContext, TValue> = {
+export type FilterFieldMappingMatch = {
   type: typeof FILTER_CONDITION_TYPE.MATCH_1_TO_1;
-  key: string;
-  format?: (
-    value: TValue,
-    filter: Record<string, unknown>,
-    context: TContext,
-  ) => any;
 };
-export type FilterFieldMappingPipeline<TContext, TValue> = {
+export type FilterFieldMappingPipeline<TValue> = {
   type: typeof FILTER_CONDITION_TYPE.AGGREGATE_PIPELINE;
-  pipeline:
-  | Record<string, unknown>[]
-  | ((
-    value: TValue,
-    filter: Record<string, unknown>,
-    context: TContext,
-  ) => any[]);
+  pipeline: (args: FunctionArgs<TValue>) => PipelineStage[];
 };
-export type FilterFieldMappingCustomCondition<TContext, TValue> = {
+export type FilterFieldMappingCustomCondition<TValue> = {
   type: typeof FILTER_CONDITION_TYPE.CUSTOM_CONDITION;
-  format: (
-    value: TValue,
-    filter: Record<string, unknown>,
-    context: TContext,
-  ) => any;
+  format: (args: FunctionArgs<TValue>) => FilterQuery<TValue>;
 };
-export type FilterFieldMapping<TContext, TValue> =
-  | FilterFieldMappingMatch<TContext, TValue>
-  | FilterFieldMappingPipeline<TContext, TValue>
-  | FilterFieldMappingCustomCondition<TContext, TValue>
-  | false;
-export type FilterMapping<TContext, TValue> = {
-  [key: string]: FilterFieldMapping<TContext, TValue>;
+export type FilterFieldMapping<TValue> =
+  | FilterFieldMappingMatch
+  | FilterFieldMappingPipeline<TValue>
+  | FilterFieldMappingCustomCondition<TValue>;
+
+export type FilterMapping<TValue> = {
+  [key: string]: FilterFieldMapping<TValue>;
 };

@@ -1,16 +1,14 @@
 /* eslint max-classes-per-file: 0 */
 
 import DataLoader from "dataloader";
-import type { Model, PipelineStage } from "mongoose";
+import type { FilterQuery, Model, PipelineStage } from "mongoose";
 import type { GraphQLContext } from "./context";
 import { buildMongoConditionsFromFilters } from "./filter/buildMongoConditionsFromFilters";
 import type { FilterMapping } from "./filter/filterType";
-import { debugConsole } from "./utils/debugConsole";
 import { mongooseLoader } from "./utils/mongooseLoader";
 import type { DataLoaderKey } from "./utils/types";
-import { withAggregateCursor } from "./utils/withAggregateCursor";
 import {
-  type PipeArgs,
+  type PipeParams,
   withConnectionAggregate,
 } from "./utils/withConnectionAggregate";
 import { withFilter } from "./utils/withFilter";
@@ -20,11 +18,9 @@ type CreateLoaderArgs<T> = {
   viewerCanSee?: (context: GraphQLContext, data: T) => Promise<T | null>;
   viewerCanSeeConnection?: (context: GraphQLContext) => boolean;
   loaderName: string;
-  filterMapping?: FilterMapping<GraphQLContext, any>;
-  defaultArgs?: Record<string, unknown>;
+  filterMapping?: FilterMapping<T>;
+  defaultFilter?: FilterQuery<T>;
   withRemovedAt?: boolean;
-  __typename?: string;
-  debug?: boolean;
 };
 
 export const createLoader = <T>({
@@ -33,9 +29,8 @@ export const createLoader = <T>({
   viewerCanSeeConnection,
   loaderName,
   filterMapping = {},
-  defaultArgs = {},
+  defaultFilter,
   withRemovedAt = true,
-  debug = false,
 }: CreateLoaderArgs<T>) => {
   const getLoader = () =>
     new DataLoader((ids: readonly string[]) => {
@@ -76,7 +71,7 @@ export const createLoader = <T>({
   const clearCache = ({ dataloaders }: GraphQLContext, id: string) =>
     dataloaders[loaderName].clear(id.toString());
 
-  const getPipeline = ({ context, args }: PipeArgs): PipelineStage[] => {
+  const getPipeline = ({ context, args }: PipeParams): PipelineStage[] => {
     const getRemovedAtMatch = () => {
       if ("withRemovedAt" in args) {
         if (args.withRemovedAt) {
@@ -109,13 +104,18 @@ export const createLoader = <T>({
       ];
     }
 
-    const argsWithDefaults = withFilter({ args, filters: defaultArgs });
-
     const builtMongoConditions = buildMongoConditionsFromFilters(
-      context,
-      argsWithDefaults.filters,
-      filterMapping,
+      {
+        context: context,
+        filters: {
+          ...defaultFilter,
+          ...args.filters
+        },
+        mapping: filterMapping
+      }
     );
+
+    console.log(builtMongoConditions)
 
     const pipeline: PipelineStage[] = [
       {
@@ -127,9 +127,7 @@ export const createLoader = <T>({
       ...builtMongoConditions.pipeline,
     ];
 
-    if (debug) {
-      debugConsole(pipeline);
-    }
+    console.log(pipeline)
 
     return pipeline;
   };
@@ -141,18 +139,11 @@ export const createLoader = <T>({
     viewerCanSee: viewerCanSeeConnection,
   });
 
-  const loadAllCursor = withAggregateCursor({
-    model,
-    pipeFn: getPipeline,
-  });
-
   return {
     Wrapper: model,
     getLoader,
     clearCache,
     load,
     loadAll,
-    getPipeline,
-    loadAllCursor,
   };
 };

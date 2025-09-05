@@ -1,12 +1,13 @@
 import type { GraphQLContext } from "@graphql/context";
 import type { ConnectionArguments } from "graphql-relay";
-import type { Aggregate, Types } from "mongoose";
+import type { Aggregate, PipelineStage, Types } from "mongoose";
 import {
   calculateOffsets,
   getPageInfo,
   offsetToCursor,
 } from "./connectionFromMongoCursor";
 import type { DataLoaderKey, NodeType } from "./types";
+import type { PipeArgs } from "./withConnectionAggregate";
 
 const cloneAggregate = (aggregate: Aggregate<unknown>): Aggregate<unknown> =>
   aggregate.model().aggregate(aggregate.pipeline()).allowDiskUse(true);
@@ -14,7 +15,7 @@ const cloneAggregate = (aggregate: Aggregate<unknown>): Aggregate<unknown> =>
 export type ConnectionOptionsAggregate<T> = {
   aggregate: Aggregate<T[]>;
   context: GraphQLContext;
-  args?: ConnectionArguments;
+  args?: PipeArgs;
   loader: (
     ctx: GraphQLContext,
     id: DataLoaderKey,
@@ -44,7 +45,7 @@ export const getTotalCount = async (
 export const connectionFromMongoAggregate = async <T>({
   aggregate,
   context,
-  args = {},
+  args,
   loader,
   raw = false,
   allowDiskUse = true,

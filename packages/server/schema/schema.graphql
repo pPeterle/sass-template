@@ -26,6 +26,7 @@ type Query {
 
     """Returns the last n items from the list."""
     last: Int
+    filters: FilterInputType
   ): TestConnection
 }
 
@@ -73,6 +74,12 @@ type Account implements Node {
   id: ID!
   name: String
   active: Boolean
+}
+
+"""Used to filter test"""
+input FilterInputType {
+  name: String
+  t: String
 }
 
 type Mutation {

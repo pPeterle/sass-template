@@ -1,15 +1,20 @@
 import type { GraphQLContext } from "@graphql/context.js";
 import type { GraphQLResolveInfo } from "graphql";
-import type { Model, PipelineStage } from "mongoose";
+import type { ConnectionArguments } from "graphql-relay";
+import type { FilterQuery, Model, PipelineStage } from "mongoose";
 import { NullConnection } from "../connection/NullConection.js";
 import { infoHasOneOfFields } from "../fields/getFieldsByInfo.js";
 import { connectionFromMongoAggregate } from "./connectionFromMongoAggregate.js";
 import type { DataLoaderKey, NodeType } from "./types.js";
 
 export type PipeArgs = {
-  info: GraphQLResolveInfo;
+  filters?: Record<string, unknown>
+} & ConnectionArguments
+
+export type PipeParams = {
+  info?: GraphQLResolveInfo;
   bypassViewerCanSee?: boolean;
-  args: Record<string, unknown>;
+  args: PipeArgs;
   context: GraphQLContext;
 };
 
@@ -20,13 +25,13 @@ type Args<T> = {
     id: DataLoaderKey,
     bypassViewerCanSee?: boolean,
   ) => NodeType<T>;
-  pipeFn: (params: PipeArgs) => PipelineStage[];
+  pipeFn: (params: PipeParams) => PipelineStage[];
   viewerCanSee?: (context: GraphQLContext) => boolean;
 };
 
 export const withConnectionAggregate =
   <T>({ loader, model, pipeFn, viewerCanSee }: Args<T>) =>
-    async (params: PipeArgs) => {
+    async (params: PipeParams) => {
       const aggregatePipeline = pipeFn(params);
 
       const { context, info, args, bypassViewerCanSee } = params;
@@ -37,11 +42,9 @@ export const withConnectionAggregate =
         }
       }
 
-      // await debugAggregate(model, aggregatePipeline);
-
-      // debugConsole(aggregatePipeline);
-
-      const shouldCount = infoHasOneOfFields(info, ["count", "totalCount"]);
+      const shouldCount = info
+        ? infoHasOneOfFields(info, ["count", "totalCount"])
+        : false;
 
       const aggregate = model.aggregate<T>(aggregatePipeline).allowDiskUse(true);
 
