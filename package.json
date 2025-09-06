@@ -6,8 +6,9 @@
 		"packages/*"
 	],
 	"scripts": {
-		"dev": "concurrently \"bun run --bun server:dev\" ",
-		"server:dev": "cd packages/server && bun run dev"
+		"dev": "concurrently \"bun run --bun server:dev\" \"bun run app:dev\" ",
+		"server:dev": "cd packages/server && bun run dev",
+		"app:dev": "cd packages/app && bun run dev"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.1.2",
@@ -16,5 +17,9 @@
 	},
 	"peerDependencies": {
 		"typescript": "^5"
+	},
+	"dependencies": {
+		"react-relay": "^20.1.1",
+		"relay-runtime": "^20.1.1"
 	}
 }

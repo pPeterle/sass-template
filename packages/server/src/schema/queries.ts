@@ -6,21 +6,21 @@ import { TestLoader } from "@/modules/teste/TestLoader";
 import { TestConnection } from "@/modules/teste/TestType";
 
 export const QueryType = new GraphQLObjectType({
-  name: "Query",
-  description: "Main Query",
-  fields: () => ({
-    id: globalIdField("Query"),
-    node: nodeField,
-    nodes: nodesField,
-    test: {
-      type: TestConnection.connectionType,
-      args: {
-        ...connectionArgs,
-        filters: {
-          type: FilterInputType,
-        },
-      },
-      resolve: (root, args, context) => TestLoader.loadAll({ args, context }),
-    },
-  }),
+	name: "Query",
+	description: "Main Query",
+	fields: () => ({
+		id: globalIdField("Query"),
+		node: nodeField,
+		nodes: nodesField,
+		test: {
+			type: TestConnection.connectionType,
+			args: {
+				...connectionArgs,
+				filters: {
+					type: FilterInputType,
+				},
+			},
+			resolve: (_root, args, context) => TestLoader.loadAll({ args, context }),
+		},
+	}),
 });

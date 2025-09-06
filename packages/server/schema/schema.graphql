@@ -1,98 +1,150 @@
-"""Main Query"""
+"""
+Main Query
+"""
 type Query {
-  """The ID of an object"""
-  id: ID!
+	"""
+	The ID of an object
+	"""
+	id: ID!
 
-  """Fetches an object given its ID"""
-  node(
-    """The ID of an object"""
-    id: ID!
-  ): Node
+	"""
+	Fetches an object given its ID
+	"""
+	node(
+		"""
+		The ID of an object
+		"""
+		id: ID!
+	): Node
 
-  """Fetches objects given their IDs"""
-  nodes(
-    """The IDs of objects"""
-    ids: [ID!]!
-  ): [Node]!
-  test(
-    """Returns the items in the list that come after the specified cursor."""
-    after: String
+	"""
+	Fetches objects given their IDs
+	"""
+	nodes(
+		"""
+		The IDs of objects
+		"""
+		ids: [ID!]!
+	): [Node]!
+	test(
+		"""
+		Returns the items in the list that come after the specified cursor.
+		"""
+		after: String
 
-    """Returns the first n items from the list."""
-    first: Int
+		"""
+		Returns the first n items from the list.
+		"""
+		first: Int
 
-    """Returns the items in the list that come before the specified cursor."""
-    before: String
+		"""
+		Returns the items in the list that come before the specified cursor.
+		"""
+		before: String
 
-    """Returns the last n items from the list."""
-    last: Int
-    filters: FilterInputType
-  ): TestConnection
+		"""
+		Returns the last n items from the list.
+		"""
+		last: Int
+		filters: FilterInputType
+	): TestConnection
 }
 
-"""An object with an ID"""
+"""
+An object with an ID
+"""
 interface Node {
-  """The id of the object."""
-  id: ID!
+	"""
+	The id of the object.
+	"""
+	id: ID!
 }
 
-"""A connection to a list of items."""
+"""
+A connection to a list of items.
+"""
 type TestConnection {
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
+	"""
+	Information to aid in pagination.
+	"""
+	pageInfo: PageInfo!
 
-  """A list of edges."""
-  edges: [TestEdge]
+	"""
+	A list of edges.
+	"""
+	edges: [TestEdge]
 }
 
-"""Information about pagination in a connection."""
+"""
+Information about pagination in a connection.
+"""
 type PageInfo {
-  """When paginating forwards, are there more items?"""
-  hasNextPage: Boolean!
+	"""
+	When paginating forwards, are there more items?
+	"""
+	hasNextPage: Boolean!
 
-  """When paginating backwards, are there more items?"""
-  hasPreviousPage: Boolean!
+	"""
+	When paginating backwards, are there more items?
+	"""
+	hasPreviousPage: Boolean!
 
-  """When paginating backwards, the cursor to continue."""
-  startCursor: String
+	"""
+	When paginating backwards, the cursor to continue.
+	"""
+	startCursor: String
 
-  """When paginating forwards, the cursor to continue."""
-  endCursor: String
+	"""
+	When paginating forwards, the cursor to continue.
+	"""
+	endCursor: String
 }
 
-"""An edge in a connection."""
+"""
+An edge in a connection.
+"""
 type TestEdge {
-  """The item at the end of the edge"""
-  node: Account
+	"""
+	The item at the end of the edge
+	"""
+	node: Account
 
-  """A cursor for use in pagination"""
-  cursor: String!
+	"""
+	A cursor for use in pagination
+	"""
+	cursor: String!
 }
 
 type Account implements Node {
-  """The ID of an object"""
-  id: ID!
-  name: String
-  active: Boolean
+	"""
+	The ID of an object
+	"""
+	id: ID!
+	name: String
+	active: Boolean
 }
 
-"""Used to filter test"""
+"""
+Used to filter test
+"""
 input FilterInputType {
-  name: String
-  t: String
+	name: String
+	t: String
 }
 
 type Mutation {
-  addTestMutation(input: AddAccountInput!): AddAccountPayload
+	addTestMutation(input: AddAccountInput!): AddAccountPayload
 }
 
 type AddAccountPayload {
-  test: Account
-  clientMutationId: String
+	test: Account
+	clientMutationId: String
 }
 
 input AddAccountInput {
-  """Name of the account"""
-  name: String!
-  clientMutationId: String
+	"""
+	Name of the account
+	"""
+	name: String!
+	clientMutationId: String
 }
