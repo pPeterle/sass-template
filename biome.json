@@ -17,6 +17,7 @@
 		"rules": {
 			"recommended": true,
 			"correctness": {
+				"noUnknownProperty": "off",
 				"noUnusedImports": {
 					"fix": "safe",
 					"level": "error",

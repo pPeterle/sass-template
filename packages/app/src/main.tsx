@@ -4,6 +4,7 @@ import "./index.css";
 import { RelayEnvironmentProvider } from "react-relay";
 import { Environment, type FetchFunction, Network } from "relay-runtime";
 import App from "./App.tsx";
+import 'virtual:uno.css';
 
 const HTTP_ENDPOINT = "https://graphql.org/graphql/";
 
